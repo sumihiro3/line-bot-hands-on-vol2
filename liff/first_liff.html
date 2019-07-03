@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>My LIFF app</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- vConsole -->
+    <script src="./lib/vconsole.min.js"></script>
+    <!-- LIFF -->
+    <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6" style="padding: 6px;">
+            <div class="card">
+                <div class="card-header">Print log</div>
+                <div class="card-body">
+                    <p class="card-text">ログを出力します。</p>
+                    <a href="#" class="btn btn-secondary" onclick="console.log('Print log');">Print log</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" style="padding: 6px;">
+            <div class="card">
+                <div class="card-header">Print info log</div>
+                <div class="card-body">
+                    <p class="card-text">Info ログを出力します。</p>
+                    <a href="#" class="btn btn-info" onclick="console.info('Print info log');">Print info log</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6" style="padding: 6px;">
+            <div class="card-header">Print warn log</div>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">Warn ログを出力します。</p>
+                    <a href="#" class="btn btn-warning" onclick="console.warn('Print warn log');">Print warn log</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6" style="padding: 6px;">
+            <div class="card">
+                <div class="card-header">Print error log</div>
+                <div class="card-body">
+                    <p class="card-text">Error ログを出力します。</p>
+                    <a href="#" class="btn btn-danger" onclick="console.error('Print error log');">Print error log</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6" style="padding: 6px;">
+            <div class="card">
+                <div class="card-header">Send TextMessage</div>
+                <div class="card-body">
+                    <p class="card-text">Bot にテキストメッセージを送信します。</p>
+                    <a href="#" class="btn btn-primary" onclick="sendTextMessage();">Send message</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+</div>
+</body>
+<script>
+window.onload = function(){
+    initVConsole();
+    initLiff();
+}
+// Initialize vConsole
+function initVConsole() {
+    window.vConsole = new window.VConsole({
+        defaultPlugins: ['system', 'network', 'element', 'storage'],
+        maxLogNumber: 1000,
+        onReady: function() {
+            console.log('vConsole is ready.');
+        },
+        onClearLog: function() {
+            console.log('on clearLog');
+        }
+    });
+}
+
+// Initialize LIFF
+function initLiff() {
+    console.log('going to initialize LIFF');
+    liff.init(
+        data => {
+            console.log('LIFF initialized!');
+            // Now you can call LIFF API
+            const userId = data.context.userId;
+            liff.getProfile().then(profile => {
+                const userDisplayName = profile.displayName
+                console.info('User name is', userDisplayName);
+            })
+            .catch((err) => {
+                console.error('LIFF getProfile failed', err);
+            });
+        },
+        err => {
+            console.error('LIFF initialization failed', err);
+        }
+    );
+}
+
+function sendTextMessage() {
+    liff.getProfile().then(profile => {
+        const userDisplayName = profile.displayName
+        liff.sendMessages([
+            {
+                type: 'text',
+                text: '私の名前は' + userDisplayName + 'です！'
+            }
+        ])
+        .then(() => {
+            console.log('message sent');
+        })
+        .catch((err) => {
+            console.error('error', err);
+        }); })
+    .catch((err) => {
+        console.error('LIFF getProfile failed', err);
+    });
+}
+</script>
+</html>

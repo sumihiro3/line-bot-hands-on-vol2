@@ -1,0 +1,6 @@
+package-lock.json
+.env
+/node_modules
+downloaded/*
+!downloaded/preview.png
+data/quiz_questions.csv

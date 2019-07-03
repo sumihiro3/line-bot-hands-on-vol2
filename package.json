@@ -1,0 +1,13 @@
+{
+    "name": "line-quiz-bot",
+    "version": "0.0.1",
+    "private": true,
+    "description": "This is hands-on quiz bot",
+    "main": "index.js",
+    "dependencies": {
+        "@line/bot-sdk": "^6.7.1",
+        "dotenv": "^8.0.0",
+        "express": "^4.17.1",
+        "memory-cache": "^0.2.0"
+    }
+}
