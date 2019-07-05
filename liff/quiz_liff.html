@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+    <div id="app">
+        <template id="quiz">
+            <v-layout row>
+<!-- API 呼び出し中 -->
+                <v-container fluid v-if="api_loading === true">
+                    <v-layout >
+                        <v-flex xs12>
+                            <div class="resultContainer" >
+                                <v-layout align-center justify-center fill-height>
+                                    <v-progress-circular
+                                            :size="70"
+                                            :width="7"
+                                            color="green"
+                                            indeterminate
+                                    ></v-progress-circular>
+                                </v-layout>
+                            </div>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
+<!-- クイズの質問表示 -->
+                <v-flex v-else-if="quiz_mode === 'ASKING'"
+                        xs12 sm6 offset-sm3
+                >
+                    <v-card>
+                        <v-toolbar color="light-blue" dark>
+                            <v-toolbar-title>第{{ current_index +1 }}問</v-toolbar-title>
+                        </v-toolbar>
+                        <!-- クイズの質問 -->
+                        <v-card-title primary-title>
+                            <div>
+                                <h3 class="headline mb-0">{{ current_question.title }}</h3>
+                                <br/>
+                                
+                            </div>
+                        </v-card-title>
+                        <!-- クイズの選択肢（ボタン） -->
+                        <v-flex 
+                            xs10
+                            offset-xs1
+                            v-for="(choice, index) in current_question.choices"
+                        >
+                            <v-btn 
+                                block
+                                large
+                                light
+                                :loading="api_loading"
+                                class="center"
+                                :color="(index === 0 || index % 2 === 0) ? 'green' : 'brown'"
+                                @click="answerQuestion(current_question.id, index)"
+                            >
+                                {{ index + 1 }}. {{ choice }}
+                            </v-btn><br/>
+                        </v-flex >
+                    </v-card>
+                </v-flex>
+<!-- 質問への回答結果の表示 -->
+                <v-flex v-else-if="quiz_mode === 'ANSWERED'"
+                    xs12 sm6 offset-sm3
+                >
+                    <v-card>
+                        <v-toolbar color="light-blue" dark>
+                            <v-toolbar-title>{{ question_result === true ? 'おめでとうございます。正解です！' : '残念！不正解です。' }}</v-toolbar-title>
+                        </v-toolbar>
+                        <!-- クイズのコメント -->
+                        <v-card-title primary-title>
+                            <v-flex 
+                                xs8
+                                offset-xs2
+                            >
+                                <img 
+                                    height="200" width="200"
+                                    :src="question_result === true ? '../static/circle.png' : '../static/x-mark.png'" />
+                            </v-flex>
+                            <div>
+                                <h5 class="headline mb-0">{{ current_question.comment }}</h5>
+                                <br/>
+                                
+                            </div>
+                        </v-card-title>
+                        <v-flex 
+                        xs10
+                        offset-xs1
+                        >
+                            <!-- クイズ結果を見る -->
+                            <v-btn 
+                                v-if="quiz_finished === true"
+                                block
+                                large
+                                light
+                                :loading="api_loading"
+                                class="center"
+                                color="brown"
+                                @click="getQuizeResult()"
+                            >
+                            クイズの結果を見る
+                            </v-btn>
+                            <!-- 次の質問へ -->
+                            <v-btn 
+                                v-if="quiz_finished === false"
+                                block
+                                large
+                                light
+                                :loading="api_loading"
+                                class="center"
+                                color="green"
+                                @click="getCurrentQuestion()"
+                            >
+                                次へ
+                            </v-btn>
+                            <br/>
+                        </v-flex >
+                    </v-card>
+                </v-flex>
+<!-- クイズ結果の表示 -->
+                <v-flex v-else-if="quiz_mode === 'COMPLETED'"
+                xs12 sm6 offset-sm3
+                >
+                <v-card>
+                    <v-toolbar color="light-blue" dark>
+                        <v-toolbar-title>クイズ結果発表！！</v-toolbar-title>
+                    </v-toolbar>
+                    <!-- クイズ結果の点数とメッセージ -->
+                    <v-card-title primary-title>
+                        
+                        <div>
+                            <h5 class="headline mb-0">{{ quiz_result.message }}</h5>
+                            <br/>
+                        </div>
+                    </v-card-title>
+                    <v-flex 
+                    xs10
+                    offset-xs1
+                    >
+                        <!-- もう一度プレイする -->
+                        <v-btn 
+                            block
+                            large
+                            light
+                            :loading="api_loading"
+                            class="center"
+                            color="green"
+                            @click="initQuiz()"
+                        >
+                        もう一度プレイする
+                        </v-btn>
+                        <br/>
+                        <!-- 終了する -->
+                        <v-btn 
+                            block
+                            large
+                            light
+                            :loading="api_loading"
+                            class="center"
+                            color="blue-grey"
+                            @click="closeLiffWindow()"
+                        >
+                        終了する
+                        </v-btn>
+                        <br />
+                    </v-flex >
+                </v-card>
+                </v-flex>
+            </v-layout>
+        </template>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./lib/vconsole.min.js"></script>
+    <script src="./lib/quiz_liff.js"></script>
+</body>
+</html>
