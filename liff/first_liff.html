@@ -95,6 +95,7 @@ function initLiff() {
             console.log('LIFF initialized!');
             // Now you can call LIFF API
             const userId = data.context.userId;
+            // ユーザーのプロフィール情報を取得
             liff.getProfile().then(profile => {
                 const userDisplayName = profile.displayName
                 console.info('User name is', userDisplayName);
