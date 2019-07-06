@@ -1,5 +1,17 @@
 # ハンズオン準備
 
+## ハンズオン資料
+
+### 今回の資料
+
+http://bit.ly/ldgk-bot-hands-on-vol2
+
+TODO: 資料掲載＆短縮URL取得
+
+### （前回）LINE Bot 開発 基本編
+
+http://bit.ly/ldgk-bot-hands-on-vol1
+
 ## ディレクトリ作成＆ソースコード クローン
 
 クローン先のディレクトリは任意です
@@ -41,10 +53,16 @@ $ ngrok http 3000
 
 ### LIFFアプリを追加する
 
+#### 名前
+
+```text
+MyFirstLIFF
+```
+
 #### エンドポイントURL
 
 ```text
-https://{ngrok のホスト名}.ngrok.io/liff/first_liff.html
+https://{ngrok のサブドメイン}.ngrok.io/liff/first_liff.html
 ```
 
 ### 環境変数を設定
@@ -65,46 +83,32 @@ $ node app.js
 
 # 第2部 クイズBot のLIFF 化
 
-## リッチメニューの設定
+## LIFFアプリを追加する
 
-### 下記資料を参照
+### 名前
 
-http://bit.ly/ldgk-bot-hands-on-vol1
+```text
+Quiz LIFF
+```
+
+### エンドポイントURL
+
+```text
+https://{ngrok のサブドメイン}.ngrok.io/liff/quiz_liff.html
+```
 
 ## プログラムの起動
 
 ```bash
-$ node app.js
-```
-
-## FlexMessage を使ったメッセージを送ってみよう
-
-### 全問回答後のメッセージをFlexMessage 化する
-
-```javascript:app.js 172 行目付近
-// 前略
-} else if (postback_type === POSTBACK_TYPE_SHOW_QUIZ_RESULT) {
-        // クイズの結果を見る
-        const quiz_result = quiz.getQuizeResultFor(user_id);
-        let message = {};
-        if (quiz_result != null) {
-            // TODO クイズの結果をFlexMessage で返す
-            message = {'type': 'text', 'text': quiz_result['message']};
-        } else {
-            // 回答が終わっていなかった場合
-            message = generateInvalidOperationMessage();
-        }
-        return client.replyMessage(replyToken, message);
-} else {
-// 後略
+$ node quiz_api.js
 ```
 
 # 関連リンク
 
 ## ハンズオン関係
 
-* [サンプルプログラム](https://github.com/sumihiro3/line-bot-hands-on-vol1)
-* [資料置き場](http://bit.ly/ldgk-bot-hands-on-vol1)
+* [サンプルプログラム](https://github.com/sumihiro3/line-bot-hands-on-vol2)
+* [資料置き場](http://bit.ly/ldgk-bot-hands-on-vol2)
 
 ## LINE 関係
 
@@ -115,10 +119,17 @@ $ node app.js
 * [Messaging API Document](https://developers.line.biz/ja/docs/messaging-api/)
 * [FlexMessage Simulator](https://developers.line.biz/console/fx/)
 * [Messaging API SDK](https://developers.line.biz/ja/docs/messaging-api/line-bot-sdk/)
+* [LINE Front-end Framework](https://developers.line.biz/ja/docs/liff/)
 
 ### LINE 公式アカウント
 
 * [LINE 公式アカウントマネージャー](https://manager.line.biz/)
+
+### Vue.js 関係
+
+* [Vue.js](https://jp.vuejs.org/index.html)
+* [Vuetify](https://vuetifyjs.com/ja/)
+* [axios](https://github.com/axios/axios)
 
 ## LINE Developer Group Kansai
 
